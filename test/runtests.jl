@@ -27,6 +27,7 @@ batch_size = 16
             @test overlap_add(b, step) == T.(repeat([1,4,9,8,5]; outer = (1, 2)))
             step = 2
             @test overlap_add(b, step) == T.(repeat([1,2,5,3,7,4,5]; outer = (1, 2)))
+            @inferred overlap_add(b, step)
         end
     end
 
@@ -38,5 +39,6 @@ batch_size = 16
     crop_xs = randomcrop_batch(xs, (11,))
     @test sum(iszero.(randomcrop_batch(xs, (11,)))) == batch_size * 3
     @test sum(iszero.(randomcrop_batch(xs, (11, 4)))) == batch_size * 14
+    @inferred randomcrop_batch(xs, (11,))
 
 end

@@ -12,12 +12,12 @@ export loadmodel!
 """
 $(TYPEDSIGNATURES)
 
-Reconstruct sequences from time-shifted segments. 
+Reconstruct a sequence from time-shifted segments `x` (samples, frames). 
 """
 function overlap_add(x::AbstractMatrix, step::Int)
     framelen, numframes = size(x)
     numsamples = step * (numframes - 1) + framelen
-    y = Zygote.bufferfrom(zeros_like(x, (numsamples,)))
+    y = Zygote.bufferfrom(zeros_like(x, (numsamples,))) # mutable when taking gradients
     for i ∈ 1:numframes
         startindex = (i - 1) * step + 1
         stopindex = startindex + framelen - 1
@@ -25,10 +25,16 @@ function overlap_add(x::AbstractMatrix, step::Int)
     end
     copy(y)
 end
+
+"""
+$(TYPEDSIGNATURES)
+
+Reconstruct sequences from time-shifted segments `x` (samples, frames, batch size). 
+"""
 function overlap_add(x::AbstractArray{T,3}, step::Int) where {T}
     framelen, numframes, batch_size = size(x)
     numsamples = step * (numframes - 1) + framelen
-    y = Zygote.bufferfrom(zeros_like(x, (numsamples, batch_size)))
+    y = Zygote.bufferfrom(zeros_like(x, (numsamples, batch_size))) # mutable when taking gradients
     for i ∈ 1:batch_size
         for j ∈ 1:numframes
             startindex = (j - 1) * step + 1
@@ -42,7 +48,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Randomly crop each element of `xs`. The `cropsize` defines the length to crop for each dimension. 
+Randomly crop `x`. The `cropsize` defines the length to crop for each dimension. 
 The dimensions beyond `length(cropsize)` are skipped from the random cropping.
 """
 function randomcrop_batch(x::AbstractArray{T}, cropsize) where {T}
@@ -83,10 +89,16 @@ function randomcrop_batch(x::AbstractArray{T}, cropsize) where {T}
     else
         crop_x
     end
-end 
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Randomly crop each element of `xs`. The `cropsize` defines the length to crop for each dimension. 
+The dimensions beyond `length(cropsize)` are skipped from the random cropping.
+"""
 function randomcrop_batch(xs::AbstractVector{T}, cropsize) where {T}
-    map(1:length(xs)) do i
-        x = xs[i]
+    map(xs) do x
         randomcrop_batch(x, cropsize)::T
     end |> batch
 end
@@ -104,7 +116,7 @@ end
 """
 $(SIGNATURES)
 
-Save Flux model.
+Load Flux model.
 """
 function loadmodel!(init_model, loadpath::AbstractString)
     model_state = load(loadpath, "model_state")
