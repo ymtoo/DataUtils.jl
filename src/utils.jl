@@ -120,6 +120,6 @@ Load Flux model.
 """
 function loadmodel!(init_model, loadpath::AbstractString)
     model_state = load(loadpath, "model_state")
-    Flux.loadmodel!(init_model, model_state)
+    loadmodel!(init_model, model_state)
     init_model
 end
