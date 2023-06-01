@@ -1,0 +1,22 @@
+name = "DataUtils"
+uuid = "6d95a013-1f05-46d5-b106-6ff8128e8b25"
+authors = ["ymtoo <ymtoo86@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+MLUtils = "f1d291b0-491e-4a28-83b9-f70985020b54"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+
+[compat]
+julia = "1.9"
+
+[extras]
+MLUtils = "f1d291b0-491e-4a28-83b9-f70985020b54"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+
+[targets]
+test = ["MLUtils", "Test", "Flux"]
