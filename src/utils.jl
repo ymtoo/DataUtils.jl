@@ -2,7 +2,7 @@ using JLD2: jldsave, load
 using MLUtils
 using Zygote
 
-import Flux: loadmodel!
+import Flux: loadmodel!, cpu
 
 export overlap_add
 export randomcrop_batch
