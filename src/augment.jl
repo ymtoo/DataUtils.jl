@@ -40,7 +40,6 @@ https://github.com/iver56/audiomentations/blob/main/audiomentations/augmentation
 """
 function rand_tanhdistortion(x::AbstractArray{T}, min_distortion = T(0.01), max_distortion = T(0.7)) where {T}
     map(eachslice(x; dims = tuple(2:ndims(x)...))) do x1
-        @show size(x1)
         if rand() > 0.5
             distortion_amount = (max_distortion - min_distortion) * rand(T) + min_distortion
             p = 1 - 0.99 * distortion_amount
