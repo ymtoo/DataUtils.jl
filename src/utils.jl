@@ -2,7 +2,7 @@ using JLD2: jldsave, load
 using MLUtils
 using Zygote
 
-import Flux: loadmodel!, cpu
+import Flux: state, loadmodel!, cpu
 
 export overlap_add
 export randomcrop_batch
@@ -109,7 +109,7 @@ $(SIGNATURES)
 Save Flux model. 
 """
 function savemodel(savepath::AbstractString, model)
-    model_state = cpu(model) |> Flux.state
+    model_state = cpu(model) |> state
     jldsave(savepath; model_state)
 end
 
