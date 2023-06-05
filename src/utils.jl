@@ -109,7 +109,8 @@ $(SIGNATURES)
 Save Flux model. 
 """
 function savemodel(savepath::AbstractString, model)
-    model_state = reset!(cpu(model)) |> state
+    reset!(model)
+    model_state = cpu(model) |> state
     jldsave(savepath; model_state)
 end
 
