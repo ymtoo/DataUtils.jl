@@ -13,15 +13,15 @@ Random time sample shift of spectrograms `x`.
 - x: multi-channel signals
 - p: the probability of applying this transform
 """
-function rand_timesampleshift(x::AbstractArray; p = 0.5)
+function rand_timesampleshift(x::AbstractArray{T}; p = 0.5) where {T}
     map(eachslice(x; dims = tuple(2:ndims(x)...))) do x1
-        if rand() > p
+        if rand() ≤ p
             xn = size(x1, 1)
             max_shift = xn ÷ 2
             shiftsample = rand(-max_shift:max_shift)
-            circshift(x1, (shiftsample,))::typeof(x1)
+            circshift(x1, (shiftsample,))
         else
-            x1
+            collect(x1) # for type stability
         end
     end |> stack
 end
@@ -37,7 +37,7 @@ Random flip `x` upside-down.
 """
 function rand_polarityinversion(x::AbstractArray{T}; p = 0.5) where {T}
     map(eachslice(x; dims = tuple(2:ndims(x)...))) do x1
-        a = rand() ≥ p ? one(T) : -one(T)
+        a = rand() ≤ p ? one(T) : -one(T)
         x1 .* a
     end |> stack
 end
@@ -61,7 +61,7 @@ function rand_tanhdistortion(x::AbstractArray{T},
                              max_distortion = T(0.7);
                              p = 0.5) where {T}
     map(eachslice(x; dims = tuple(2:ndims(x)...))) do x1
-        if rand() > p
+        if rand() ≤ p
             distortion_amount = (max_distortion - min_distortion) * rand(T) + min_distortion
             γ = 1 - 0.99 * distortion_amount
             threshold = quantile(abs.(x1), γ) |> T
@@ -73,9 +73,9 @@ function rand_tanhdistortion(x::AbstractArray{T},
                 post_gain = rms_x1 / rms_dist_x1
                 dist_x1 .*= post_gain
             end
-            dist_x1::typeof(x1)
+            dist_x1
         else
-            x1
+            collect(x1) # for type stability
         end
     end |> stack
 end

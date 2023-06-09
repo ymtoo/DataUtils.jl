@@ -65,3 +65,16 @@ end
     @inferred randomcrop_batch(xs, (11,))
 
 end
+
+@testset "augment" begin
+
+    augs = [rand_timesampleshift, 
+            rand_polarityinversion,
+            rand_tanhdistortion]
+    x = randn(Float32, 100, 2, batch_size)
+    for aug ∈ augs
+        @inferred aug(x) 
+        @test size(aug(x)) == size(x)
+    end
+
+end 
