@@ -7,6 +7,24 @@ using MLUtils
 ondevices = [cpu]
 batch_size = 16
 
+function _ismatch(x::AbstractMatrix, y::AbstractMatrix)
+    n = size(x, 1)
+    for i ∈ axes(y, 1)
+        if x == y[i:i+n-1,:]
+            return true
+        end
+    end
+    false
+end
+
+function ismatch(x::AbstractMatrix, y::AbstractMatrix)
+    if size(x, 1) < size(y, 1)
+        _ismatch(x, y)
+    else
+        _ismatch(y, x)
+    end
+end
+
 @testset "utils" begin
 
     Ts = [Int32, Int64, Float32, Float64]
@@ -32,11 +50,16 @@ batch_size = 16
     end
 
     xs = [randn(10, 3) for _ ∈ 1:batch_size]
-    @test size(randomcrop_batch(xs, (5,))) == (5, 3, batch_size)
+    crop_xs = randomcrop_batch(xs, (5,))
+    @test size(crop_xs) == (5, 3, batch_size)
+    @test all([ismatch(crop_x, x) for (x, crop_x) 
+               ∈ zip(xs, eachslice(crop_xs; dims = (3,)))])
     @test size(randomcrop_batch(xs, (5, 1))) == (5, 1, batch_size)
     @test size(randomcrop_batch(xs, (5, 2))) == (5, 2, batch_size)
     @test randomcrop_batch(xs, (10, 3)) == batch(xs)
     crop_xs = randomcrop_batch(xs, (11,))
+    @test all([ismatch(crop_x, x) for (x, crop_x) 
+               ∈ zip(xs, eachslice(crop_xs; dims = (3,)))])
     @test sum(iszero.(randomcrop_batch(xs, (11,)))) == batch_size * 3
     @test sum(iszero.(randomcrop_batch(xs, (11, 4)))) == batch_size * 14
     @inferred randomcrop_batch(xs, (11,))
