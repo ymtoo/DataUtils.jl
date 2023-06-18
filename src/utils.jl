@@ -12,7 +12,31 @@ export loadmodel!
 """
 $(TYPEDSIGNATURES)
 
-Reconstruct a sequence from time-shifted segments `x` (samples, frames). 
+Reconstruct a sequence from time-shifted segments `x` vector of vector where the length of the 
+outer vector is number of segments and the length of the inner vector is number of samples 
+of the segment. 
+"""
+function overlap_add(x::AbstractVector{T}, step::Int) where {T}
+    numframes = length(x)
+    segment_sizes = size.(x)
+    remain_segment_dims = segment_sizes[1][2:end]
+    remain_dims = (1:remain_segment_dim for remain_segment_dim ∈ remain_segment_dims) 
+    numsamples = step * (numframes - 1) + first(last(segment_sizes))
+    y = Zygote.bufferfrom(zeros_like(first(x), (numsamples,remain_segment_dims...))) # mutable when taking gradients
+    for (i, x1) ∈ enumerate(x)
+        startindex = (i - 1) * step + 1
+        stopindex = startindex + first(segment_sizes[i]) - 1
+        slice_dims = (startindex:stopindex, remain_dims...)
+        y[slice_dims...] += x1
+    end
+    copy(y)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Reconstruct a sequence from time-shifted segments `x` matrix where the number of columns is
+number of segments and the number of rows is number of samples of each segment. 
 """
 function overlap_add(x::AbstractMatrix, step::Int)
     framelen, numframes = size(x)
@@ -29,7 +53,9 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Reconstruct sequences from time-shifted segments `x` (samples, frames, batch size). 
+Reconstruct a sequence from time-shifted segments `x` 3D array where the first dimension is
+number of samples of a segment, the second dimension is number of segments and the third 
+dimension is batch size.  
 """
 function overlap_add(x::AbstractArray{T,3}, step::Int) where {T}
     framelen, numframes, batch_size = size(x)
