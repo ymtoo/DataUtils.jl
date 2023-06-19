@@ -31,23 +31,25 @@ end
     onvecvec = [false, true] 
     for ondevice ∈ ondevices
         for T ∈ Ts
-            for onvecvec1 ∈ onvecvec 
-                a = T.([1 2 3;
-                        2 3 4;
-                        3 4 5]) |> ondevice
-                onvecvec1 && (a = eachcol(a))
-                step = 1
-                @test overlap_add(a, step) == T.([1,4,9,8,5]) |> ondevice
-                step = 2
-                @test overlap_add(a, step) == T.([1,2,5,3,7,4,5]) |> ondevice
-            end
+            a = T.([1 2 3;
+                    2 3 4;
+                    3 4 5]) |> ondevice
+            step = 1
+            @test overlap_add(a, step) == T.([1,4,9,8,5]) |> ondevice
+            step = 2
+            @test overlap_add(a, step) == T.([1,2,5,3,7,4,5]) |> ondevice
+            @inferred overlap_add(a, step)
+
             b = T.([1 2 3; 2 3 4; 3 4 5 ;;; 
                     1 2 3; 2 3 4; 3 4 5]) |> ondevice
             step = 1
-            @test overlap_add(b, step) == T.(repeat([1,4,9,8,5]; outer = (1, 2)))
+            @test overlap_add(eachslice(b; dims = 3), step) == T.([1 2 3; 3 5 7; 5 7 9; 3 4 5]) |> ondevice 
+            @test batch_overlap_add(b, step) == T.(repeat([1,4,9,8,5]; outer = (1, 2))) |> ondevice
             step = 2
-            @test overlap_add(b, step) == T.(repeat([1,2,5,3,7,4,5]; outer = (1, 2)))
-            @inferred overlap_add(b, step)
+            @test overlap_add(eachslice(b; dims = 3), step) == T.([1 2 3; 2 3 4; 4 6 8; 2 3 4; 3 4 5]) |> ondevice
+            @test batch_overlap_add(b, step) == T.(repeat([1,2,5,3,7,4,5]; outer = (1, 2))) |> ondevice
+            @inferred overlap_add(eachslice(b; dims = 3), step)
+            @inferred batch_overlap_add(b, step) 
         end
     end
 
