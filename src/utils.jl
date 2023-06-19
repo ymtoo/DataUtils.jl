@@ -4,7 +4,7 @@ using Zygote
 
 import Flux: cpu, reset!, state, loadmodel!
 
-export overlap_add
+export overlap_add, batch_overlap_add
 export randomcrop_batch
 export savemodel
 export loadmodel!
@@ -53,11 +53,11 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Reconstruct a sequence from time-shifted segments `x` 3D array where the first dimension is
+Reconstruct a sequence from batched time-shifted segments `x` 3D array where the first dimension is
 number of samples of a segment, the second dimension is number of segments and the third 
 dimension is batch size.  
 """
-function overlap_add(x::AbstractArray{T,3}, step::Int) where {T}
+function batch_overlap_add(x::AbstractArray{T,3}, step::Int) where {T}
     framelen, numframes, batch_size = size(x)
     numsamples = step * (numframes - 1) + framelen
     y = Zygote.bufferfrom(zeros_like(x, (numsamples, batch_size))) # mutable when taking gradients
