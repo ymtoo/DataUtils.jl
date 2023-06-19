@@ -19,7 +19,7 @@ of the segment.
 function overlap_add(x::AbstractVector{T}, step::Int) where {T}
     numframes = length(x)
     segment_sizes = size.(x)
-    remain_segment_dims = segment_sizes[1][2:end]
+    remain_segment_dims = first(segment_sizes)[2:end]
     remain_dims = (1:remain_segment_dim for remain_segment_dim ∈ remain_segment_dims) 
     numsamples = step * (numframes - 1) + first(last(segment_sizes))
     y = Zygote.bufferfrom(zeros_like(first(x), (numsamples,remain_segment_dims...))) # mutable when taking gradients
@@ -38,17 +38,7 @@ $(TYPEDSIGNATURES)
 Reconstruct a sequence from time-shifted segments `x` matrix where the number of columns is
 number of segments and the number of rows is number of samples of each segment. 
 """
-function overlap_add(x::AbstractMatrix, step::Int)
-    framelen, numframes = size(x)
-    numsamples = step * (numframes - 1) + framelen
-    y = Zygote.bufferfrom(zeros_like(x, (numsamples,))) # mutable when taking gradients
-    for i ∈ 1:numframes
-        startindex = (i - 1) * step + 1
-        stopindex = startindex + framelen - 1
-        @views y[startindex:stopindex] += x[:,i]
-    end
-    copy(y)
-end
+overlap_add(x::AbstractMatrix, step::Int) = overlap_add(eachcol(x), step)
 
 """
 $(TYPEDSIGNATURES)
