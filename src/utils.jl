@@ -113,10 +113,10 @@ $(TYPEDSIGNATURES)
 Randomly crop each element of `xs`. The `cropsize` defines the length to crop for each dimension. 
 The dimensions beyond `length(cropsize)` are skipped from the random cropping.
 """
-function randomcrop_batch(xs::AbstractVector{T}, cropsize) where {T}
-    map(xs) do x
+function randomcrop_batch(xs::AbstractVector{T}, cropsize) where {T<:AbstractArray}
+    stack(xs) do x
         randomcrop_batch(x, cropsize)::T
-    end |> batch
+    end
 end
 
 """
