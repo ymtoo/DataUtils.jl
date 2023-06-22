@@ -1,7 +1,7 @@
 name = "DataUtils"
 uuid = "6d95a013-1f05-46d5-b106-6ff8128e8b25"
 authors = ["ymtoo <ymtoo86@gmail.com>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
