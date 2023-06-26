@@ -74,7 +74,8 @@ end
 
     augs = [rand_timesampleshift, 
             rand_polarityinversion,
-            rand_tanhdistortion]
+            rand_tanhdistortion,
+            rand_addgaussiansnr]
     x = randn(Float32, 100, 2, batch_size)
     for aug ∈ augs
         @inferred aug(x) 
