@@ -3,8 +3,9 @@ using DataUtils
 
 using Flux
 using MLUtils
+using TimeScaleModification
 
-ondevices = [cpu]
+ondevices = [cpu, gpu]
 batch_size = 16
 
 function _ismatch(x::AbstractMatrix, y::AbstractMatrix)
