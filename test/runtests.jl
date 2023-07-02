@@ -75,11 +75,23 @@ end
     augs = [rand_timesampleshift, 
             rand_polarityinversion,
             rand_tanhdistortion,
-            rand_addgaussiansnr]
+            rand_addgaussiansnr,
+            rand_pitchshift,
+            rand_timestretch]
     x = randn(Float32, 100, 2, batch_size)
+    x1 = x[:,1,1]
     for aug ∈ augs
-        @inferred aug(x) 
-        @test size(aug(x)) == size(x)
+        @inferred aug(x1) 
+        @test size(aug(x1)) == size(x1)
     end
 
+    agg_augment(x) = x |> 
+                     rand_timesampleshift |> 
+                     rand_polarityinversion |>
+                     rand_tanhdistortion |> 
+                     rand_addgaussiansnr |>
+                     rand_pitchshift |>
+                     rand_timestretch
+    @inferred augment(agg_augment, x) 
+    @test size(augment(agg_augment, x)) == size(x)
 end 
