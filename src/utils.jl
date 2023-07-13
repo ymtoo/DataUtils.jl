@@ -38,27 +38,19 @@ $(TYPEDSIGNATURES)
 Reconstruct a sequence from time-shifted segments `x` matrix where the number of columns is
 number of segments and the number of rows is number of samples of each segment. 
 """
-overlap_add(x::AbstractMatrix, step::Int) = overlap_add(eachcol(x), step)
+overlap_add(x::AbstractMatrix{T}, step::Int) where {T<:Real}= overlap_add(eachcol(x), step)
 
 """
 $(TYPEDSIGNATURES)
 
 Reconstruct a sequence from batched time-shifted segments `x` 3D array where the first dimension is
 number of samples of a segment, the second dimension is number of segments and the third 
-dimension is batch size.  
+dimension is batch size. 
 """
-function batch_overlap_add(x::AbstractArray{T,3}, step::Int) where {T}
-    framelen, numframes, batch_size = size(x)
-    numsamples = step * (numframes - 1) + framelen
-    y = Zygote.bufferfrom(zeros_like(x, (numsamples, batch_size))) # mutable when taking gradients
-    for i ∈ 1:batch_size
-        for j ∈ 1:numframes
-            startindex = (j - 1) * step + 1
-            stopindex = startindex + framelen - 1
-            @views y[startindex:stopindex,i] += x[:,j,i]
-        end
+function overlap_add(x::AbstractArray{T,3}, step::Int) where {T<:Real} 
+    stack(eachslice(x; dims =3)) do x1
+        overlap_add(x1, step)
     end
-    copy(y)
 end
 
 """
