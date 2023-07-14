@@ -1,8 +1,11 @@
 using Test
 using DataUtils
 
+using DSP
 using Flux
+using FiniteDifferences
 using MLUtils
+using Statistics
 using TimeScaleModification
 
 ondevices = [cpu, gpu]
@@ -94,4 +97,28 @@ end
                      rand_timestretch
     @inferred augment(agg_augment, x) 
     @test size(augment(agg_augment, x)) == size(x)
+
 end 
+
+@testset "losses" begin
+    
+    N = 10000
+    n = 128
+    noverlap = 64
+    windows = [nothing, hanning]
+    for ondevice ∈ ondevices
+        x = randn(N) 
+        ondevice_x = ondevice(x)
+        for window ∈ windows
+            @test Array(DataUtils._stft(ondevice_x, n, noverlap; window = window)) ≈ 
+                stft(x, n, noverlap; window = window)
+
+            grad1 = gradient(x -> sum(abs2, DataUtils._stft(x, n, noverlap; window = window)), ondevice_x)[1] |> Array
+            grad2 = grad(central_fdm(5, 1), 
+                         x -> sum(abs2, stft(x, n, noverlap; window = window)), 
+                         x)[1]
+            @test cor(grad1, grad2) > 0.9
+        end
+    end
+
+end

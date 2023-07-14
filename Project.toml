@@ -4,6 +4,8 @@ authors = ["ymtoo <ymtoo86@gmail.com>"]
 version = "0.1.2"
 
 [deps]
+ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
@@ -17,9 +19,12 @@ Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 julia = "1.9"
 
 [extras]
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
+FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 MLUtils = "f1d291b0-491e-4a28-83b9-f70985020b54"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Flux", "MLUtils", "Test"]
+test = ["DSP", "FiniteDifferences", "Flux", "MLUtils", "Statistics", "Test"]
