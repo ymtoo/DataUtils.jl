@@ -64,5 +64,7 @@ function spectral_convergence_loss(stft_x̂::AbstractMatrix, stft_x::AbstractMat
 end
 
 function spectral_magnitude_loss(stft_x̂::AbstractMatrix{T}, stft_x::AbstractMatrix{T}, numsamples::Int) where {T}
-    sum(abs, log.(abs.(stft_x̂) .+ eps(T)) - log.(abs.(stft_x) .+ eps(T))) / numsamples
+    abs_stft_x̂ = abs.(stft_x̂)
+    abs_stft_x = abs.(stft_x)
+    sum(abs, log.(abs_stft_x̂ .+ eps(eltype(abs_stft_x̂))) - log.(abs_stft_x .+ eps(eltype(abs_stft_x)))) / numsamples
 end
