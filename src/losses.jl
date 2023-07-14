@@ -40,14 +40,14 @@ function stft_loss(x̂::AbstractVector, x::AbstractVector, nfft, noverlap)
 end
 
 function stft_loss(x̂::AbstractArray{T,3}, x::AbstractArray{T,3}, nfft, noverlap) where {T}
-    _, ax2, ax3 = axes(x)
-    map(ax3) do i 
-        map(ax2) do j
-            @views x̂1 = x̂[:,j,i]
-            @views x1 = x[:,j,i]
-            stft_loss(x1, x̂1, nfft, noverlap)
-        end |> stack
-    end |> stack
+    _, ax2, ax3 = @ignore_derivatives axes(x)
+    ijs = @ignore_derivatives reshape([(i,j) for i ∈ ax2 for j ∈ ax3], length(ax2), length(ax3))
+    map(ijs) do ij
+        i, j = ij
+        x̂1 = x̂[:,i,j]
+        x1 = x[:,i,j]
+        stft_loss(x̂1, x1, nfft, noverlap)
+    end 
 end
 
 # https://github.com/JuliaDiff/ChainRules.jl/issues/722
