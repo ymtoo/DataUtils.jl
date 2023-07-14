@@ -39,12 +39,24 @@ function stft_loss(x̂::AbstractVector, x::AbstractVector, nfft, noverlap)
     spectral_convergence_loss(stft_x̂, stft_x) + spectral_magnitude_loss(stft_x̂, stft_x, numsamples)
 end
 
-function stft_loss(x̂::AbstractArray, x::AbstractArray, nfft, noverlap)
-    remain_dims = tuple(2:ndims(x)...)
-    map(zip(eachslice(x; dims = remain_dims), eachslice(x̂; dims = remain_dims))) do (x1, x̂1)
-        stft_loss(x1, x̂1, nfft, noverlap)
+function stft_loss(x̂::AbstractArray{T,3}, x::AbstractArray{T,3}, nfft, noverlap) where {T}
+    _, ax2, ax3 = axes(x)
+    map(ax3) do i 
+        map(ax2) do j
+            @views x̂1 = x̂[:,j,i]
+            @views x1 = x[:,j,i]
+            stft_loss(x1, x̂1, nfft, noverlap)
+        end |> stack
     end |> stack
 end
+
+# https://github.com/JuliaDiff/ChainRules.jl/issues/722
+# function stft_loss(x̂::AbstractArray, x::AbstractArray, nfft, noverlap)
+#     remain_dims = tuple(2:ndims(x)...)
+#     map(zip(eachslice(x; dims = remain_dims), eachslice(x̂; dims = remain_dims))) do (x1, x̂1)
+#         stft_loss(x1, x̂1, nfft, noverlap)
+#     end |> stack
+# end
 
 function spectral_convergence_loss(stft_x̂::AbstractMatrix, stft_x::AbstractMatrix)
     abs_stft_x = abs.(stft_x)
