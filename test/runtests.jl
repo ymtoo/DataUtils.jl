@@ -102,12 +102,15 @@ end
 
 @testset "losses" begin
     
+    # Float32 throw an error
+    # https://discourse.julialang.org/t/fftw-plan-applied-to-array-with-wrong-memory-alignment/101672
+    T = Float64 
     N = 10000
     n = 128
     noverlap = 64
     windows = [nothing, hanning]
     for ondevice ∈ ondevices
-        x = randn(N) 
+        x = randn(T, N) 
         ondevice_x = ondevice(x)
         for window ∈ windows
             @test Array(DataUtils._stft(ondevice_x, n, noverlap; window = window)) ≈ 
@@ -118,6 +121,14 @@ end
                          x -> sum(abs2, stft(x, n, noverlap; window = window)), 
                          x)[1]
             @test cor(grad1, grad2) > 0.9
+
+            stft_x = DataUtils._stft(ondevice_x, n, noverlap; window = window)
+
+            epsilon = T(1e-10) + T(1e-10)im # avoid NaN if `stft_x̂` is zeros
+            abs_stft_x = abs.(stft_x .+ epsilon)
+            @test spectral_convergence_loss(abs_stft_x, abs_stft_x) == 0
+            @test spectral_magnitude_loss(abs_stft_x, abs_stft_x, N) == 0
+            @test stft_loss(x, x, n, noverlap, window) == 0
         end
     end
 
