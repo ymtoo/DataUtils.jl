@@ -1,7 +1,7 @@
 name = "DataUtils"
 uuid = "6d95a013-1f05-46d5-b106-6ff8128e8b25"
 authors = ["ymtoo <ymtoo86@gmail.com>"]
-version = "0.1.2"
+version = "0.1.3"
 
 [deps]
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
