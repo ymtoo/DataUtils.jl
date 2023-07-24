@@ -31,7 +31,7 @@ end
 """
 STFT loss.
 """
-function stft_loss(x̂::AbstractVector, x::AbstractVector, nfft, noverlap, window = nothing)
+function stft_loss(x̂::AbstractVector{T}, x::AbstractVector{T}, nfft, noverlap, window = nothing) where {T}
     numsamples = length(x̂)
     stft_x̂ = _stft(x̂, nfft, noverlap; window = window)
     stft_x = _stft(x, nfft, noverlap; window = window)

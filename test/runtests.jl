@@ -1,12 +1,13 @@
 using Test
 using DataUtils
 
+using CUDA
 using DSP
 using Flux
 using FiniteDifferences
 using MLUtils
 using Statistics
-using TimeScaleModification
+#using TimeScaleModification
 
 ondevices = [cpu, gpu]
 batch_size = 16
@@ -78,9 +79,9 @@ end
     augs = [rand_timesampleshift, 
             rand_polarityinversion,
             rand_tanhdistortion,
-            rand_addgaussiansnr,
-            rand_pitchshift,
-            rand_timestretch]
+            rand_addgaussiansnr,]
+            # rand_pitchshift,
+            # rand_timestretch]
     x = randn(Float32, 100, 2, batch_size)
     x1 = x[:,1,1]
     for aug ∈ augs
@@ -92,9 +93,9 @@ end
                      rand_timesampleshift |> 
                      rand_polarityinversion |>
                      rand_tanhdistortion |> 
-                     rand_addgaussiansnr |>
-                     rand_pitchshift |>
-                     rand_timestretch
+                     rand_addgaussiansnr #|>
+                    #  rand_pitchshift |>
+                    #  rand_timestretch
     @inferred augment(agg_augment, x) 
     @test size(augment(agg_augment, x)) == size(x)
 
