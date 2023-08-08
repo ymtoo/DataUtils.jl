@@ -1,6 +1,7 @@
 module DataUtilsTimeScaleModificationExt
 
 using DataUtils
+using IntervalSets
 using TimeScaleModification: pitchshift, timestretch, WSOLA, hanning
 
 """
