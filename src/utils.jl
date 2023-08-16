@@ -4,7 +4,7 @@ using Zygote
 
 import Flux: cpu, reset!, state, loadmodel!
 
-export overlap_add, batch_overlap_add
+export overlap_add
 export randomcrop_batch
 export savemodel
 export loadmodel!
