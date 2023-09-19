@@ -24,8 +24,8 @@ DataUtilsTimeScaleModificationExt = "TimeScaleModification"
 julia = "1.9"
 
 [extras]
-DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 MLUtils = "f1d291b0-491e-4a28-83b9-f70985020b54"

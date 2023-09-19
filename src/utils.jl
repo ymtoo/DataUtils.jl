@@ -6,8 +6,8 @@ import Flux: cpu, reset!, state, loadmodel!
 
 export overlap_add
 export randomcrop_batch
-export savemodel
-export loadmodel!
+export savemodel, savemodelopt
+export loadmodel!, loadopt
 
 """
 $(TYPEDSIGNATURES)
@@ -131,4 +131,24 @@ function loadmodel!(init_model, loadpath::AbstractString)
     model_state = load(loadpath, "model_state")
     loadmodel!(init_model, model_state)
     init_model
+end
+
+"""
+$(SIGNATURES)
+
+Save Flux model and optimiser state. 
+"""
+function savemodelopt(savepath::AbstractString, model, opt_state)
+    reset!(model)
+    model_state = cpu(model) |> state
+    jldsave(savepath; model_state, opt_state)
+end
+
+"""
+$(SIGNATURES)
+
+Load Flux optimiser state.
+"""
+function loadopt(loadpath::AbstractString)
+    load(loadpath, "opt_state")
 end
