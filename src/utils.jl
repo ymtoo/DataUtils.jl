@@ -141,7 +141,7 @@ Save Flux model and optimiser state.
 function savemodelopt(savepath::AbstractString, model, opt_state)
     reset!(model)
     model_state = cpu(model) |> state
-    jldsave(savepath; model_state, opt_state)
+    jldsave(savepath; model_state, cpu(opt_state))
 end
 
 """
